@@ -72,6 +72,7 @@
         "source_location": "cpp",
         "ranges": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "span": "cpp"
     }
 }

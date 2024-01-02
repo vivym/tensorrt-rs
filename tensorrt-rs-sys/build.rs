@@ -67,9 +67,7 @@ fn main() {
     let libraries = vec![
         "nvinfer",
         "nvinfer_plugin",
-        "nvonnxparser",
         "nvparsers",
-        "onnx_proto",
     ];
 
     for library in libraries {
