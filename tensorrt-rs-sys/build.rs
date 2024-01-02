@@ -58,6 +58,7 @@ fn main() {
         .include(tensorrt_include_dir)
         .include("cxx/include")
         .files(&cpp_files)
+        .define("FMT_HEADER_ONLY", None)
         .flag_if_supported("-std=c++17")
         .compile("tensorrt-rs-sys-cxxbridge");
 

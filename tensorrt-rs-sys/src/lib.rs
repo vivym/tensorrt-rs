@@ -8,6 +8,7 @@ pub(crate) mod ffi {
 
         fn create_logger() -> UniquePtr<Logger>;
         fn log(self: Pin<&mut Logger>, severity: i32, msg: &str);
+        fn set_level(self: Pin<&mut Logger>, severity: i32);
     }
 
     #[namespace = "trt_rs::runtime"]

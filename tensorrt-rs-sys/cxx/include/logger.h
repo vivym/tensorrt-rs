@@ -14,6 +14,8 @@ public:
     void log(Severity severity, const char* msg) noexcept override;
 
     void log(int32_t severity, rust::Str msg) noexcept;
+
+    void set_level(int32_t severity) noexcept;
 };
 
 std::unique_ptr<Logger> create_logger();

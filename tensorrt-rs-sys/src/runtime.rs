@@ -67,7 +67,7 @@ impl CudaEngine {
             0 => TensorIOMode::NONE,
             1 => TensorIOMode::INPUT,
             2 => TensorIOMode::OUTPUT,
-            v @ _ => panic!("Invalid tensor io mode: {}", v),
+            mode => panic!("Invalid tensor io mode: {}", mode),
         }
     }
 
@@ -100,13 +100,14 @@ impl ExecutionContext {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::logger::Severity;
 
     #[test]
     fn test_runtime() {
         use std::{io::Read, path::Path};
 
         let mut runtime = Runtime::new().unwrap();
-        runtime.logger().log(0, "Hello, world!");
+        runtime.logger().log(Severity::Info, "Hello, world!");
 
         let engine_path = Path::new("../tmp/pp-ocr-v4-det-fp16.engine");
         if engine_path.exists() {
@@ -120,17 +121,17 @@ mod tests {
             let num_io_tensors = engine.get_num_io_tensors();
 
             let msg = format!("num_io_tensors: {}", num_io_tensors);
-            runtime.logger().log(0, msg.as_str());
+            runtime.logger().log(Severity::Info, msg.as_str());
 
             for i in 0..num_io_tensors {
                 let name = engine.get_io_tensor_name(i);
                 let mode = engine.get_tensor_io_mode(name);
                 let shape = engine.get_tensor_shape(name);
                 let msg = format!("name: {}, mode: {:?}, shape: {:?}", name, mode, shape);
-                runtime.logger().log(0, msg.as_str());
+                runtime.logger().log(Severity::Info, msg.as_str());
             }
         } else {
-            runtime.logger().log(0, "Engine file not found! Skip test!");
+            runtime.logger().log(Severity::Info, "Engine file not found! Skip test!");
         }
     }
 }
