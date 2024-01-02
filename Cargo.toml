@@ -1,0 +1,9 @@
+[workspace]
+members = ["tensorrt", "tensorrt-rs-sys"]
+resolver = "2"
+
+[profile.release]
+lto = true
+
+[profile.bench]
+lto = true
