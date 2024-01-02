@@ -7,7 +7,9 @@ pub(crate) mod ffi {
         type Logger;
 
         fn create_logger() -> UniquePtr<Logger>;
+
         fn log(self: Pin<&mut Logger>, severity: i32, msg: &str);
+
         fn set_level(self: Pin<&mut Logger>, severity: i32);
     }
 
@@ -16,13 +18,15 @@ pub(crate) mod ffi {
         include!("tensorrt-rs-sys/cxx/include/runtime.h");
 
         type Runtime;
+
         type CudaEngine;
+
         type ExecutionContext;
 
         // Runtime
         fn create_runtime(logger: Pin<&mut Logger>) -> UniquePtr<Runtime>;
 
-        fn deserialize(self: Pin<&mut Runtime>, data: &[u8], size: usize) -> UniquePtr<CudaEngine>;
+        fn deserialize(self: Pin<&mut Runtime>, data: &[u8]) -> UniquePtr<CudaEngine>;
 
         fn set_max_threads(self: Pin<&mut Runtime>, max_threads: i32) -> bool;
 
@@ -34,6 +38,8 @@ pub(crate) mod ffi {
 
         // CudaEngine
         fn get_tensor_shape(self: &CudaEngine, name: &str) -> Vec<i32>;
+
+        fn get_tensor_dtype(self: &CudaEngine, name: &str) -> i32;
 
         fn get_num_layers(self: &CudaEngine) -> i32;
 

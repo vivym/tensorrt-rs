@@ -36,7 +36,7 @@ fn main() {
     ).expect("Could not find TensorRT include path");
 
     let tensorrt_library_dir = find_dir(
-        "TENSORRT_LIBRARY_PATH",
+        "TENSORRT_LIB_PATH",
         vec!["/usr/local/lib", "/usr/lib/x86_64-linux-gnu"],
         "libnvinfer.so",
     ).expect("Could not find TensorRT library path");

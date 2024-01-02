@@ -3,6 +3,57 @@ use cxx::UniquePtr;
 use cuda_rs::{event::CuEvent, stream::CuStream};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
+pub enum DataType {
+    // 32-bit floating point format.
+    FLOAT = 0,
+
+    // IEEE 16-bit floating-point format.
+    HALF = 1,
+
+    // Signed 8-bit integer representing a quantized floating-point value.
+    INT8 = 2,
+
+    // Signed 32-bit integer format.
+    INT32 = 3,
+
+    // 8-bit boolean. 0 = false, 1 = true, other values undefined.
+    BOOL = 4,
+
+    // Unsigned 8-bit integer format.
+    // Cannot be used to represent quantized floating-point values.
+    // Use the IdentityLayer to convert kUINT8 network-level inputs to {kFLOAT, kHALF} prior
+    // to use with other TensorRT layers, or to convert intermediate output
+    // before kUINT8 network-level outputs from {kFLOAT, kHALF} to kUINT8.
+    // kUINT8 conversions are only supported for {kFLOAT, kHALF}.
+    // kUINT8 to {kFLOAT, kHALF} conversion will convert the integer values
+    // to equivalent floating point values.
+    // {kFLOAT, kHALF} to kUINT8 conversion will convert the floating point values
+    // to integer values by truncating towards zero. This conversion has undefined behavior for
+    // floating point values outside the range [0.0f, 256.0f) after truncation.
+    // kUINT8 conversions are not supported for {kINT8, kINT32, kBOOL}.
+    UINT8 = 5,
+
+    // Signed 8-bit floating point with
+    // 1 sign bit, 4 exponent bits, 3 mantissa bits, and exponent-bias 7.
+    // \warning kFP8 is not supported yet and will result in an error or undefined behavior.
+    FP8 = 6
+}
+
+impl DataType {
+    pub fn get_elem_size(&self) -> usize {
+        match self {
+            DataType::FLOAT => 4,
+            DataType::HALF => 2,
+            DataType::INT8 => 1,
+            DataType::INT32 => 4,
+            DataType::BOOL => 1,
+            DataType::UINT8 => 1,
+            DataType::FP8 => 1,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum TensorIOMode {
     // Tensor is not an input or output.
     NONE = 0,
@@ -10,6 +61,16 @@ pub enum TensorIOMode {
     INPUT = 1,
     // Tensor is output by the engine.
     OUTPUT = 2
+}
+
+impl TensorIOMode {
+    pub fn is_input(&self) -> bool {
+        *self == TensorIOMode::INPUT
+    }
+
+    pub fn is_output(&self) -> bool {
+        *self == TensorIOMode::OUTPUT
+    }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -200,8 +261,8 @@ impl Runtime {
         &mut self.logger
     }
 
-    pub fn deserialize(&mut self, data: &[u8], size: usize) -> Option<CudaEngine> {
-        let engine = self.runtime.pin_mut().deserialize(data, size);
+    pub fn deserialize(&mut self, data: &[u8]) -> Option<CudaEngine> {
+        let engine = self.runtime.pin_mut().deserialize(data);
         if engine.is_null() {
             None
         } else {
@@ -231,6 +292,19 @@ pub struct CudaEngine(pub(crate) UniquePtr<ffi::CudaEngine>);
 impl CudaEngine {
     pub fn get_tensor_shape(&self, name: &str) -> Vec<i32> {
         self.0.get_tensor_shape(name)
+    }
+
+    pub fn get_tensor_dtype(&self, name: &str) -> DataType {
+        match self.0.get_tensor_dtype(name) {
+            0 => DataType::FLOAT as _,
+            1 => DataType::HALF as _,
+            2 => DataType::INT8 as _,
+            3 => DataType::INT32 as _,
+            4 => DataType::BOOL as _,
+            5 => DataType::UINT8 as _,
+            6 => DataType::FP8 as _,
+            dtype => panic!("Invalid data type: {}", dtype),
+        }
     }
 
     pub fn get_num_layers(&self) -> i32 {
@@ -494,7 +568,7 @@ mod tests {
             let mut data = Vec::new();
             file.read_to_end(&mut data).unwrap();
 
-            let mut engine = runtime.deserialize(data.as_slice(), data.len()).unwrap();
+            let mut engine = runtime.deserialize(data.as_slice()).unwrap();
             let _context = engine.create_execution_context().unwrap();
 
             let num_io_tensors = engine.get_num_io_tensors();

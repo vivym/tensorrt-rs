@@ -12,3 +12,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+cuda-rs = "0.1"
+tensorrt-rs-sys = { path = "../tensorrt-rs-sys" }
+thiserror = "1"
+
+[dev-dependencies]
+clap = { version = "4", features = ["derive"] }
+tch = "0.14.0"

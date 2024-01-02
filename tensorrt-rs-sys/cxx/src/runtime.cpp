@@ -3,8 +3,8 @@
 namespace trt_rs::runtime {
 
 std::unique_ptr<CudaEngine>
-Runtime::deserialize(rust::Slice<const std::uint8_t> data, std::size_t size) noexcept {
-    auto engine = runtime_->deserializeCudaEngine(data.data(), size);
+Runtime::deserialize(rust::Slice<const std::uint8_t> data) noexcept {
+    auto engine = runtime_->deserializeCudaEngine(data.data(), data.size());
     if (!engine) {
         return nullptr;
     } else {

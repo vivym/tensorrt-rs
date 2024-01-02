@@ -1,14 +1,9 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+pub mod engine;
+pub mod error;
+pub mod tensor;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub use engine::TRTEngine;
+pub use error::{TRTError, TRTResult};
+pub use tensor::{Shape, Tensor};
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use tensorrt_rs_sys::runtime::DataType;

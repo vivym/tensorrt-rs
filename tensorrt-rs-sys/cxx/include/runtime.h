@@ -20,7 +20,7 @@ class Runtime {
 public:
     Runtime(std::unique_ptr<IRuntime> runtime) : runtime_(std::move(runtime)) {}
 
-    std::unique_ptr<CudaEngine> deserialize(rust::Slice<const std::uint8_t> data, std::size_t size) noexcept;
+    std::unique_ptr<CudaEngine> deserialize(rust::Slice<const std::uint8_t> data) noexcept;
 
     bool set_max_threads(int32_t threads) noexcept {
         return runtime_->setMaxThreads(threads);
@@ -48,6 +48,11 @@ public:
     CudaEngine(std::unique_ptr<ICudaEngine> engine) : engine_(std::move(engine)) {}
 
     rust::Vec<int32_t> get_tensor_shape(rust::Str name) const noexcept;
+
+    int32_t get_tensor_dtype(rust::Str name) const noexcept {
+        const auto name_str = std::string(name);
+        return static_cast<int32_t>(engine_->getTensorDataType(name_str.c_str()));
+    }
 
     int32_t get_num_layers() const noexcept {
         return engine_->getNbLayers();
