@@ -1,6 +1,6 @@
 [package]
 name = "tensorrt-rs-sys"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Ming Yang <ymviv@qq.com>"]
 description = "Rust binding to NVIDIA TensorRT"
 repository = "https://github.com/vivym/tensorrt-rs"
