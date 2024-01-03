@@ -13,7 +13,7 @@ edition = "2021"
 
 [dependencies]
 cuda-rs = "0.1"
-tensorrt-rs-sys = { path = "../tensorrt-rs-sys" }
+tensorrt-rs-sys = "0.1"
 thiserror = "1"
 
 [dev-dependencies]
