@@ -1,6 +1,6 @@
 [package]
 name = "tensorrt"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Ming Yang <ymviv@qq.com>"]
 description = "Rust wrapper for NVIDIA TensorRT"
 repository = "https://github.com/vivym/tensorrt-rs"
